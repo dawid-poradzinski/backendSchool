@@ -2,6 +2,9 @@ package rootekstudio.com.zsebackend.sql.models;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,10 +40,12 @@ public class User {
     @Column(name = "rank")
     private Rank rank = Rank.USER;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Post.class)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Post.class, cascade = CascadeType.ALL)
     private Set<Post> posts;
     
     public enum Rank{

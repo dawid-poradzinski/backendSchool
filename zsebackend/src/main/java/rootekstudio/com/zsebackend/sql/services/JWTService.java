@@ -1,5 +1,6 @@
 package rootekstudio.com.zsebackend.sql.services;
 
+import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class JWTService {
 
     @PostConstruct
     public void postConstruct() {
-        algorithm = Algorithm.HMAC512(algoritmKey);
+        algorithm = Algorithm.HMAC512(Base64.getDecoder().decode(algoritmKey));
     }
 
     public String generateJWT(rootekstudio.com.zsebackend.sql.models.User user) {

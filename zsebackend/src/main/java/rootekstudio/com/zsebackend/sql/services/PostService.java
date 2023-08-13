@@ -1,5 +1,7 @@
 package rootekstudio.com.zsebackend.sql.services;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,13 +45,15 @@ public class PostService {
 
     public List<Post> getAllPostLimited(int startFrom, int limit) {
 
-        Page<Post> page = postRepository.findAll(PageRequest.of(startFrom, limit, Sort.by(Sort.Order.asc("creation_date"))));
+        Page<Post> page = postRepository.findAll(PageRequest.of(startFrom, limit, Sort.by(Sort.Order.desc("creationDate"))));
 
         return page.getContent();
     }
 
     public Post createPost(Post post, User user) {
+
         post.setUser(user);
+        post.setCreationDate(LocalDateTime.now());
         return postRepository.save(post);
     }
 

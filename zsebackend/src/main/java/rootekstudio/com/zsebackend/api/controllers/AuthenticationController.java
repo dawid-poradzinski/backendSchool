@@ -1,5 +1,7 @@
 package rootekstudio.com.zsebackend.api.controllers;
 
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,13 +27,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginBody loginBody) {
+    public ResponseEntity<HashMap<String,String>> loginUser(@Valid @RequestBody LoginBody loginBody) {
 
         String jwt = userService.loginUser(loginBody);
         if(jwt == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } 
-        return ResponseEntity.ok(jwt);
+        HashMap<String,String> hashmap = new HashMap<>();
+        hashmap.put("jwt", jwt);
+        return ResponseEntity.ok(hashmap);
     }
 
     @PostMapping("create")

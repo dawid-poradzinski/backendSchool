@@ -29,6 +29,8 @@ public class PostController {
     }
 
 
+    // work
+
     @PostMapping("get/all")
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
@@ -40,10 +42,12 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    // work
+    
     @PostMapping("get/all/limited/{startFrom}/{limit}")
-    public ResponseEntity<List<Post>> getAllPostsLimited(@PathVariable int startFrom, @PathVariable int limi) {
+    public ResponseEntity<List<Post>> getAllPostsLimited(@PathVariable int startFrom, @PathVariable int limit) {
 
-        List<Post> posts = postService.getAllPostLimited(startFrom, limi);
+        List<Post> posts = postService.getAllPostLimited(startFrom, limit);
 
         if(posts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -51,6 +55,8 @@ public class PostController {
 
         return ResponseEntity.ok(posts);
     }
+
+    // work
 
     @PutMapping("add")
     public ResponseEntity<Post> addPost(@RequestBody Post post, @AuthenticationPrincipal User user) {
@@ -64,6 +70,8 @@ public class PostController {
         return ResponseEntity.ok(opPost);
     }
 
+    // work
+
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Boolean> deletePost(@PathVariable Long id) {
         
@@ -73,6 +81,8 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    // work
 
     @PostMapping("get/{id}")
     public ResponseEntity<Post> getSinglePostById(@PathVariable Long id) {
@@ -85,6 +95,8 @@ public class PostController {
 
         return ResponseEntity.ok(post);
     }
+
+    // work
 
     @PostMapping("get/count")
     public ResponseEntity<Long> getPostCount() {
