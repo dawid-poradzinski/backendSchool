@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import rootekstudio.com.zsebackend.sql.models.User;
 import rootekstudio.com.zsebackend.sql.repositories.UserRepository;
@@ -53,9 +55,9 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } catch (JWTDecodeException e) {
+            } catch (JWTDecodeException | SignatureVerificationException | TokenExpiredException e) {
                 
-            }
+            }  
         }
         filterChain.doFilter(request, response);
     }

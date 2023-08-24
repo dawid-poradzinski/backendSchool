@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,19 @@ public class AuthenticationController {
         } catch (UserAlreadyExistException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+
+    }
+
+    @PostMapping("reset/{email}")
+    public ResponseEntity<String> resetUserPassword(@PathVariable String email) {
+
+        String token = userService.resetUserPassword(email);
+
+        if(token != null) {
+            return ResponseEntity.ok(token);
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
     }
 }

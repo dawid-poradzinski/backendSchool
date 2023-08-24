@@ -1,5 +1,6 @@
 package rootekstudio.com.zsebackend.sql.models;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,6 +45,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "expire_token", columnDefinition = "DATE")
+    private LocalDateTime expireToken;
+    
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Post.class, cascade = CascadeType.ALL)
     private Set<Post> posts;

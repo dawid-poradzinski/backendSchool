@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import rootekstudio.com.zsebackend.api.models.response.PostResponse;
 import rootekstudio.com.zsebackend.sql.models.Post;
 import rootekstudio.com.zsebackend.sql.models.User;
 import rootekstudio.com.zsebackend.sql.services.PostService;
@@ -32,8 +33,8 @@ public class PostController {
     // work
 
     @PostMapping("get/all")
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts();
 
         if(posts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -45,9 +46,9 @@ public class PostController {
     // work
     
     @PostMapping("get/all/limited/{startFrom}/{limit}")
-    public ResponseEntity<List<Post>> getAllPostsLimited(@PathVariable int startFrom, @PathVariable int limit) {
+    public ResponseEntity<List<PostResponse>> getAllPostsLimited(@PathVariable int startFrom, @PathVariable int limit) {
 
-        List<Post> posts = postService.getAllPostLimited(startFrom, limit);
+        List<PostResponse> posts = postService.getAllPostLimited(startFrom, limit);
 
         if(posts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -59,12 +60,23 @@ public class PostController {
     // work
 
     @PutMapping("add")
-    public ResponseEntity<Post> addPost(@RequestBody Post post, @AuthenticationPrincipal User user) {
+    public ResponseEntity<PostResponse> addPost(@RequestBody Post post, @AuthenticationPrincipal User user) {
 
-        Post opPost = postService.createPost(post, user);
+        PostResponse opPost = postService.createPost(post, user);
 
         if(opPost == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        return ResponseEntity.ok(opPost);
+    }
+
+    @PutMapping("change")
+    public ResponseEntity<PostResponse> changePost(@RequestBody Post post) {
+        PostResponse opPost = postService.changePost(post);
+
+        if(opPost == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         return ResponseEntity.ok(opPost);
@@ -85,9 +97,9 @@ public class PostController {
     // work
 
     @PostMapping("get/{id}")
-    public ResponseEntity<Post> getSinglePostById(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> getSinglePostById(@PathVariable Long id) {
 
-        Post post = postService.getSinglePost(id);
+        PostResponse post = postService.getSinglePost(id);
 
         if(post == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -98,7 +110,7 @@ public class PostController {
 
     // work
 
-    @PostMapping("get/count")
+    @PostMapping("count")
     public ResponseEntity<Long> getPostCount() {
 
         return ResponseEntity.ok(postService.getPostsNumber());

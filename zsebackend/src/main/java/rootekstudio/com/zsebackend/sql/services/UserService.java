@@ -1,6 +1,9 @@
 package rootekstudio.com.zsebackend.sql.services;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -35,9 +38,24 @@ public class UserService {
         user.setEmail(register.getEmail());
         user.setFullName(register.getFullName());
         user.setUsername(register.getUsername());
-        // TODO Password Generation if user cant register
-        String password = "Qwertyuiop2002";
-        user.setPassword(encryptionService.encrypyPassword(password));
+        
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String num = "0123456789";
+        String special = "<>,.?/}]{[+_-)(&%^#@!=)]}";
+        
+        String combination = upper+lower+special+num;
+
+       int len = 16;
+
+        char[] password = new char[len];
+        Random r = new Random();
+
+        for(int i = 0; i < len; i++) {
+            password[i] = combination.charAt(r.nextInt(combination.length()));
+        }
+
+        user.setPassword(encryptionService.encrypyPassword(new String(password)));
 
         if(register.getRank() != null) {
             
@@ -53,7 +71,7 @@ public class UserService {
         RegisterResponse regResponse = new RegisterResponse();
 
         regResponse.setUser(userRepository.save(user));
-        regResponse.setTemporaryPassword(password);
+        regResponse.setTemporaryPassword(new String(password));
         return regResponse;
 
     }
@@ -68,6 +86,25 @@ public class UserService {
             if(encryptionService.verifyPassword(loginBody.getPassword(), user.getPassword())) {
                 return jwtService.generateJWT(user);
             }
+        }
+
+        return null;
+    }
+
+    public String resetUserPassword(String email) {
+        Optional<User> opUser = userRepository.findByEmailIgnoreCase(email);
+
+        if(opUser.isPresent()) {
+            User user = opUser.get();
+
+            String token = UUID.randomUUID().toString();
+
+            user.setResetToken(token);
+            user.setExpireToken(LocalDateTime.now());
+
+            userRepository.save(user);
+
+            return token;
         }
 
         return null;
