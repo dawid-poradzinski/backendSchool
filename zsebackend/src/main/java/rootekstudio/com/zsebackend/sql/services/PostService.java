@@ -32,7 +32,7 @@ public class PostService {
             postResponse.setCreationDate(post.getCreationDate());
             postResponse.setDescription(post.getDescription());
             postResponse.setMainImage(post.getMainImage());
-            postResponse.setUsername(post.getUser().getUsername());
+            postResponse.setFullName(post.getUser().getFullName());
 
             return postResponse;
     }
@@ -64,9 +64,9 @@ public class PostService {
         return null;
     }
 
-    public List<PostResponse> getAllPostLimited(int startFrom, int limit) {
+    public List<PostResponse> getAllPostLimited(int pageNumber, int postsPerPage) {
 
-        Page<Post> page = postRepository.findAll(PageRequest.of(startFrom, limit, Sort.by(Sort.Order.desc("creationDate"))));
+        Page<Post> page = postRepository.findAll(PageRequest.of(pageNumber, postsPerPage, Sort.by(Sort.Order.desc("id"))));
 
         List<PostResponse> responseList = new ArrayList<>();
 

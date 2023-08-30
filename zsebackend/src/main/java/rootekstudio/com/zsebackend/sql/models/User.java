@@ -1,6 +1,5 @@
 package rootekstudio.com.zsebackend.sql.models;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +24,8 @@ import lombok.Setter;
 public class User {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", sequenceName = "USER_SEQ", allocationSize = 1)
     @Column(name = "id", unique = true)
     private Long id;
 
@@ -44,12 +45,6 @@ public class User {
     @JsonIgnore
     @Column(name = "password")
     private String password;
-
-    @Column(name = "reset_token")
-    private String resetToken;
-
-    @Column(name = "expire_token", columnDefinition = "DATE")
-    private LocalDateTime expireToken;
     
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Post.class, cascade = CascadeType.ALL)
@@ -62,5 +57,12 @@ public class User {
     }
 
     public User() {};
+
+    public User(String fullName, String username, String email, String password) {
+    this.fullName = fullName;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    }
 
 }

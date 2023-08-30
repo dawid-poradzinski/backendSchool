@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,8 @@ import lombok.Setter;
 public class Element {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "element_seq")
+    @SequenceGenerator(name = "element_seq", sequenceName = "ELEMENT_SEQ", allocationSize = 1)
     @Column(name = "id", unique = true)
     private Long id;
 

@@ -1,17 +1,16 @@
 package rootekstudio.com.zsebackend.sql.services;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import rootekstudio.com.zsebackend.api.exceptions.UserAlreadyExistException;
 import rootekstudio.com.zsebackend.api.models.response.RegisterResponse;
 import rootekstudio.com.zsebackend.api.models.send.LoginBody;
 import rootekstudio.com.zsebackend.api.models.send.RegistrationBody;
+import rootekstudio.com.zsebackend.api.models.send.ResetPasswordBody;
 import rootekstudio.com.zsebackend.sql.models.User;
+import rootekstudio.com.zsebackend.sql.models.User.Rank;
 import rootekstudio.com.zsebackend.sql.repositories.UserRepository;
 
 @Service
@@ -27,18 +26,7 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public RegisterResponse createUser(RegistrationBody register) throws UserAlreadyExistException {
-        if(userRepository.findByUsernameIgnoreCase(register.getUsername()).isPresent()
-        || userRepository.findByEmailIgnoreCase(register.getEmail()).isPresent()
-        ) {
-            throw new UserAlreadyExistException();
-        }
-
-        User user = new User();
-        user.setEmail(register.getEmail());
-        user.setFullName(register.getFullName());
-        user.setUsername(register.getUsername());
-        
+    public String generateRandomPassword() {
         String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lower = "abcdefghijklmnopqrstuvwxyz";
         String num = "0123456789";
@@ -55,7 +43,25 @@ public class UserService {
             password[i] = combination.charAt(r.nextInt(combination.length()));
         }
 
-        user.setPassword(encryptionService.encrypyPassword(new String(password)));
+        return new String(password);
+    }
+
+
+    public RegisterResponse createUser(RegistrationBody register) throws UserAlreadyExistException {
+        if(userRepository.findByUsernameIgnoreCase(register.getUsername()).isPresent()
+        || userRepository.findByEmailIgnoreCase(register.getEmail()).isPresent()
+        ) {
+            throw new UserAlreadyExistException();
+        }
+
+        User user = new User();
+        user.setEmail(register.getEmail());
+        user.setFullName(register.getFullName());
+        user.setUsername(register.getUsername());
+        
+        String pass = generateRandomPassword();
+
+        user.setPassword(encryptionService.encrypyPassword(pass));
 
         if(register.getRank() != null) {
             
@@ -71,7 +77,7 @@ public class UserService {
         RegisterResponse regResponse = new RegisterResponse();
 
         regResponse.setUser(userRepository.save(user));
-        regResponse.setTemporaryPassword(new String(password));
+        regResponse.setTemporaryPassword(pass);
         return regResponse;
 
     }
@@ -91,22 +97,73 @@ public class UserService {
         return null;
     }
 
-    public String resetUserPassword(String email) {
-        Optional<User> opUser = userRepository.findByEmailIgnoreCase(email);
+    public int resetOwnPassword(User user, ResetPasswordBody resetPasswordBody) {
+        Optional<User> opUser = userRepository.findById(user.getId());
 
         if(opUser.isPresent()) {
-            User user = opUser.get();
+            if(opUser.get().getEmail().equals(user.getEmail())){
 
-            String token = UUID.randomUUID().toString();
+                if(encryptionService.verifyPassword(resetPasswordBody.getOldPassword(), opUser.get().getPassword())) {
+                    user.setPassword(encryptionService.encrypyPassword(resetPasswordBody.getNewPassword()));
+                    userRepository.save(user);
+                    return 3;
+                }
+                return 2;
+            }
 
-            user.setResetToken(token);
-            user.setExpireToken(LocalDateTime.now());
 
-            userRepository.save(user);
-
-            return token;
+            return 1;
         }
 
+
+        return 0;
+    }
+
+    public String resetElsePassword(User user, Long id) {
+        Optional<User> opUser = userRepository.findById(user.getId());
+
+        if(opUser.isPresent() && (opUser.get().getEmail().equals(user.getEmail()) && (user.getRank().equals(Rank.ADMIN)))) {
+
+            opUser = userRepository.findById(id);
+
+            if(opUser.isPresent()) {
+            user = opUser.get();
+            String pass = generateRandomPassword();
+            user.setPassword(encryptionService.encrypyPassword(pass));
+            return pass;
+            }
+            
+        }
         return null;
+    }
+
+    public Boolean changeRank(String rank, User user, Long id) {
+        Optional<User> opUser = userRepository.findById(user.getId());
+
+        if(opUser.isPresent() && (opUser.get().getEmail().equals(user.getEmail()) && (user.getRank().equals(Rank.ADMIN)))) {
+
+            opUser = userRepository.findById(id);
+
+            if(opUser.isPresent()) {
+                user = opUser.get();
+                
+                user.setRank(Rank.valueOf(rank));
+
+                userRepository.save(user);
+
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public void userOnStart() {
+        Optional<User> opUser = userRepository.findByUsernameIgnoreCase("bot_admin");
+        if(!opUser.isPresent()){
+            User user = new User("bot_admin", "bot_admin", "bot_admin@gmail.com",  encryptionService.encrypyPassword("SzkolaKoNsTanTynO2Cy!Ki"));
+
+            userRepository.save(user);
+        }
     }
 }

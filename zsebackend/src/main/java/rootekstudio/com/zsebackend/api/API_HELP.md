@@ -19,6 +19,33 @@ Auth: {
     }
     return: "jwt": String
 
+    ====User Password Reset====
+    link PUT: /auth/me/password/reset
+    required: jwt token
+    JSON: {
+        oldPassword: String,
+        newPassword: String
+    }
+    return: boolean;
+
+    ====User Password Reset By Admin====
+    link PUT: /auth/admin/{id}/password/reset
+    required: {
+        ADMIN rank,
+        id of existing user - Long
+    }
+    return: new password - String
+
+    ====Rank Change By Admin====
+    link PUT: /auth/admin/{id}/rank/change
+    required: {
+        ADMIN rank
+        id of existing user - Long
+    }
+    JSON: {
+        rank: String - /"ADMIN","WORKER","USER"/
+    }
+    return: boolean
 }
 
 Post: {
@@ -28,12 +55,15 @@ Post: {
         "title": String.
         "creationDate": LocalDateTime,
         "description": String,
-        "username": String
+        "fullName": String
     }
 
     ====Add Post=====
     link PUT: /post/add
-    required: admin / worke rank
+    required: {
+        admin / worke rank,
+        post doesn't exist
+    }
     JSON: {
         "title": String,
         "description": String,
@@ -50,7 +80,10 @@ Post: {
 
     ====Change Post====
     link PUT: /post/change
-    required: admin / worker rank
+    required: {
+        admin / worker rank,
+        post exist
+    }
     JSON: {
         "id": int,
         "title": String,
@@ -64,25 +97,15 @@ Post: {
     required: id: int - id of post
     return: Post
 
-    ====Add Post====
-    link PUT: /post/add
-    required: admin / worker rank
-    JSON: {
-        "title": String,
-        "description": String,
-        "mainImage": String
-    }
-    return: Post
-
     ====Get All Posts====
     link POST: /post/get/all 
     return: List<Post>
 
     ====Get All Posts Limited====
-    link POST : /post/get/all/limited{startFrom}/{limit}
+    link POST : /post/get/all/limited{pageNumber}/{postsPerPage}
     required: {
-        startFrom: int - number from newest post
-        limit: int - how much show
+        pageNumber: int - number of page
+        postsPerPage: int - how much posts per page
     }
     return: List<Post>
 
@@ -108,7 +131,10 @@ Element: {
 
     ====Add Element====
     link PUT: /element/add
-    required: worker / admin rank
+    required: {
+        worker / admin rank,
+        element doesn't exist
+    }
     JSON: {
         "name": String,
         "settings": HashMap<String, Object>
@@ -125,7 +151,10 @@ Element: {
 
     ====Change Element====
     link PUT: /element/change
-    required: worker / admin rank
+    required: {
+        worker / admin rank,
+        element exist
+    }
     JSON: {
         "name": String,
         "settings": HashMap<String, Object>
@@ -140,3 +169,26 @@ Element: {
     link POST: /element/get/all
     return: List<Element>
 }
+
+File: {
+    ====Add file to server====
+    link PUT: /page/upload
+    required: {
+        ADMIN / WORKER rank,
+        file
+    }
+    JSON MULTIPART: {
+        "file: : file`
+    }
+    return dir path
+
+    ====Delete file from server====
+    link DELETE: /page/delete/{name}
+    required: {
+        ADMIN / WORKER rank
+        name - name of file with .txt - String
+    }
+    return: boolean
+}
+
+first user password: SzkolaKoNsTanTynO2Cy!Ki

@@ -45,10 +45,10 @@ public class PostController {
 
     // work
     
-    @PostMapping("get/all/limited/{startFrom}/{limit}")
-    public ResponseEntity<List<PostResponse>> getAllPostsLimited(@PathVariable int startFrom, @PathVariable int limit) {
+    @PostMapping("get/all/limited/{pageNumber}/{postsPerPage}")
+    public ResponseEntity<List<PostResponse>> getAllPostsLimited(@PathVariable int pageNumber, @PathVariable int postsPerPage) {
 
-        List<PostResponse> posts = postService.getAllPostLimited(startFrom, limit);
+        List<PostResponse> posts = postService.getAllPostLimited(pageNumber, postsPerPage);
 
         if(posts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

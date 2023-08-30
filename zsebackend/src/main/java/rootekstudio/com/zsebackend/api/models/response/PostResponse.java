@@ -13,5 +13,5 @@ public class PostResponse {
     LocalDateTime creationDate;
     String description;
     String mainImage;
-    String username;
+    String fullName;
 }
