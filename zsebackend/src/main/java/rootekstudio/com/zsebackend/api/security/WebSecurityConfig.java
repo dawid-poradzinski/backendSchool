@@ -31,6 +31,7 @@ public class WebSecurityConfig {
         .requestMatchers("/element/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/element/delete**").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/element/**").permitAll()
+        .requestMatchers("/page/gete/**").permitAll()
         .requestMatchers("/page/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("upload-dir/**").permitAll()
         .anyRequest().authenticated();
