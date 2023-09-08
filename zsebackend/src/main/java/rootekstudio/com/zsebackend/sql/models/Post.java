@@ -1,9 +1,15 @@
 package rootekstudio.com.zsebackend.sql.models;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,6 +47,9 @@ public class Post {
 
     @Column(name = "main_image")
     private String mainImage;
+
+    @Column(length = 4000)
+    private Set<String> images;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JsonIgnore
