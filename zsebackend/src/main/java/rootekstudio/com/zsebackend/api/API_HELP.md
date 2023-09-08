@@ -92,7 +92,7 @@ Post: {
     }
     return: Post
 
-        ====Get Single Post====
+    ====Get Single Post====
     link POST: /post/get/{id}
     required: id: int - id of post
     return: Post

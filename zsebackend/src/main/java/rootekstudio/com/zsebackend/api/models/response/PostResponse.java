@@ -1,6 +1,7 @@
 package rootekstudio.com.zsebackend.api.models.response;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +15,5 @@ public class PostResponse {
     String description;
     String mainImage;
     String fullName;
+    Set<String> images;
 }

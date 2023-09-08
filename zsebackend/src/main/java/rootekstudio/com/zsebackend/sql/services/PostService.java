@@ -33,6 +33,7 @@ public class PostService {
             postResponse.setDescription(post.getDescription());
             postResponse.setMainImage(post.getMainImage());
             postResponse.setFullName(post.getUser().getFullName());
+            postResponse.setImages(post.getImages());
 
             return postResponse;
     }
@@ -90,7 +91,8 @@ public class PostService {
         Optional<Post> opPost = postRepository.findById(post.getId());
 
         if(opPost.isPresent()) {
-            return changePostToPostResponse(postRepository.save(opPost.get()));
+            post.setUser(opPost.get().getUser());
+            return changePostToPostResponse(postRepository.save(post));
         }
 
         return null;
