@@ -1,21 +1,14 @@
 package rootekstudio.com.zsebackend.api.models.send;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public class RegistrationBody {
-    @NotNull
+@Setter
+public class ChangeRankBody {
     @NotBlank
-    private String fullName;
     @NotNull
-    @NotBlank
-    private String username;
-    @NotNull
-    @NotBlank
-    @Email
-    private String email;
     private String rank;
 }

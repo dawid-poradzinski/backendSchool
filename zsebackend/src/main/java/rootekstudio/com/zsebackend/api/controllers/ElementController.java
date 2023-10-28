@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import rootekstudio.com.zsebackend.api.models.response.ElementResponse;
+import rootekstudio.com.zsebackend.api.models.send.ElementBody;
 import rootekstudio.com.zsebackend.sql.models.Element;
 import rootekstudio.com.zsebackend.sql.services.ElementService;
 
@@ -26,8 +29,8 @@ public class ElementController {
     }
 
     @PostMapping("get/all")
-    public ResponseEntity<List<Element>> getAllElement() {
-        List<Element> list = elementService.getAllElements();
+    public ResponseEntity<List<ElementResponse>> getAllElement() {
+        List<ElementResponse> list = elementService.getAllElements();
 
         if(list.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -37,8 +40,8 @@ public class ElementController {
     }
 
     @PostMapping("get/byName/{name}")
-    public ResponseEntity<Element> getSingleElementByName(@PathVariable String name) {
-        Element element = elementService.getElementByName(name);
+    public ResponseEntity<ElementResponse> getSingleElementByName(@PathVariable String name) {
+        ElementResponse element = elementService.getElementByName(name);
 
         if(element == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -48,9 +51,9 @@ public class ElementController {
     }
 
     @PutMapping("add")
-    public ResponseEntity<Element> addElement(@RequestBody Element element) {
+    public ResponseEntity<Element> addElement(@Valid @RequestBody ElementBody elementBody) {
 
-        Element opElement = elementService.createElement(element);
+        Element opElement = elementService.createElement(elementBody);
 
         if(opElement == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -59,8 +62,21 @@ public class ElementController {
         return ResponseEntity.ok(opElement);
     }
 
+    @PutMapping("change")
+    public ResponseEntity<Element> changeElement(@Valid @RequestBody ElementBody elementBody) {
+
+        Element opElement = elementService.changeElement(elementBody);
+
+        if(opElement == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+
+        return ResponseEntity.ok(opElement);
+    }
+
     @DeleteMapping("delete")
-    public ResponseEntity<Boolean> deleteElemenyById(@RequestBody Element element) {
+    public ResponseEntity<Boolean> deleteElement(@RequestBody Element element) {
 
         if(Boolean.TRUE.equals(elementService.deleteElement(element))) {
             return ResponseEntity.ok(true);
@@ -70,7 +86,7 @@ public class ElementController {
     }
 
     @DeleteMapping("delete/byName/{name}")
-    public ResponseEntity<Boolean> deleteElemenyById(@PathVariable String name) {
+    public ResponseEntity<Boolean> deleteElemenyByName(@PathVariable String name) {
 
         if(Boolean.TRUE.equals(elementService.deleteElementByName(name))) {
             return ResponseEntity.ok(true);

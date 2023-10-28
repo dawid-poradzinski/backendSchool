@@ -20,15 +20,20 @@ public class WebSecurityConfig {
         http.csrf().disable().cors().disable();
         http.addFilterBefore(jwtRequestFilter, AuthorizationFilter.class);
         http.authorizeHttpRequests()
-        .requestMatchers("/auth/create").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
+        .requestMatchers("/auth/create").hasAnyAuthority("ROLE_ADMIN")
+        .requestMatchers("/auth/admin/**").hasAnyAuthority("ROLE_ADMIN")
+        .requestMatchers("/auth/me/***").hasAnyAuthority("ROLE_USER","ROLE_ADMIN","ROLE_WORKER")
         .requestMatchers("/auth/**").permitAll()
-        // TODO before creating user. change after to hasAnyAuthority
         .requestMatchers("/post/delete/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/post/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
+        .requestMatchers("/post/change").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/post/**").permitAll()
         .requestMatchers("/element/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/element/delete**").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
         .requestMatchers("/element/**").permitAll()
+        .requestMatchers("/page/get/**").permitAll()
+        .requestMatchers("/page/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_WORKER")
+        .requestMatchers("upload-dir/**").permitAll()
         .anyRequest().authenticated();
         return http.build();
     }
